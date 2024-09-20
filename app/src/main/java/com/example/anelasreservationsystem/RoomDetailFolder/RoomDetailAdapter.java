@@ -1,3 +1,5 @@
+
+
 package com.example.anelasreservationsystem.RoomDetailFolder;
 import android.content.Context;
 import android.content.Intent;
@@ -58,9 +60,6 @@ public class RoomDetailAdapter extends RecyclerView.Adapter<RoomDetailAdapter.Ro
             intent.putExtra("price", room.getPrice());
             intent.putStringArrayListExtra("imageURLs", new ArrayList<>(room.getImageURLs())); // Pass image URLs
             intent.putExtra("amenities", (Serializable) room.getAmenities());
-
-            intent.putExtra("adults", room.getAdults()); // Pass number of adults
-            intent.putExtra("children", room.getChildren()); // Pass number of children
 
             // Start the activity
             context.startActivity(intent);

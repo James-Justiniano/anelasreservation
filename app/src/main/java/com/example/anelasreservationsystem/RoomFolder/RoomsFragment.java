@@ -86,4 +86,5 @@ public class RoomsFragment extends Fragment {
             }
         });
     }
+
 }
