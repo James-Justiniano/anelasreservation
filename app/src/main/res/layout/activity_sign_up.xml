@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:cardCornerRadius="28dp"
+        android:layout_marginBottom="-20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="28dp"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign Up"
+                android:layout_gravity="center"
+                android:textColor="@color/textcolor"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/poppins_semibold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create a new account"
+                android:layout_gravity="center"
+                android:textColor="@color/grey"/>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Full Name"
+                android:textColor="@color/grey"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextText"
+                android:hint=""
+                android:textColor="@color/black"
+                android:minHeight="48dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone number"
+                android:textColor="@color/grey"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/phnum"
+                android:hint=""
+                android:textColor="@color/black"
+                android:minHeight="48dp"
+                android:inputType="phone" />
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email Address"
+                android:textColor="@color/grey"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextText5"
+                android:textColor="@color/black"
+                android:minHeight="48dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:textColor="@color/grey"
+                android:textStyle="bold"/>
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/username"
+                android:textColor="@color/black"
+                android:hint=""
+                android:minHeight="48dp"/>
+            <!-- Date of Birth Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date of Birth"
+                android:textColor="@color/grey"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/dobTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select"
+                android:drawableStart="@drawable/baseline_calendar_month_24"
+                android:minHeight="48dp"
+                android:drawablePadding="8dp"
+                android:padding="12dp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:layout_marginTop="10dp"
+                android:textColor="@color/grey"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextText2"
+                android:drawableEnd="@drawable/baseline_remove_red_eye_24"
+                android:hint=""
+                android:textColor="@color/black"
+                android:inputType="textPassword"
+                android:minHeight="48dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm password"
+                android:textColor="@color/grey"
+                android:textStyle="bold"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextText6"
+                android:drawableEnd="@drawable/baseline_remove_red_eye_24"
+                android:hint=""
+                android:inputType="textPassword"
+                android:textColor="@color/black"
+                android:minHeight="48dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/getstartbgbtn"
+                android:text="SIGN UP"
+                android:id="@+id/btnsignup"
+                android:textColor="@color/white"
+                android:textSize="15sp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="65dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

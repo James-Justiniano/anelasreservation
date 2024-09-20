@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "942938222574",
+    "project_id": "anelasreservationsystem",
+    "storage_bucket": "anelasreservationsystem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:942938222574:android:853a8aa53b26c0b5a068ff",
+        "android_client_info": {
+          "package_name": "com.example.anelasreservationsystem"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1Uvptio45Tw3ounspO940Tw916P_8-5Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

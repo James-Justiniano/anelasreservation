@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="recycler_view_item_spacing">13dp</dimen> <!-- Adjust the value as needed -->
+</resources>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/dialog_background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/termsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Terms and Conditions"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:paddingBottom="16dp"
+        android:textColor="@color/textcolor" />
+
+    <TextView
+        android:id="@+id/termsDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="By proceeding, you agree that the payment is non-refundable. Please ensure that all necessary details are provided before confirming your reservation."
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="16dp" />
+
+    <CheckBox
+        android:id="@+id/agreeCheckBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="I agree to the terms and conditions"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:paddingBottom="16dp" />
+
+    <Button
+        android:id="@+id/acceptButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Accept"
+        android:backgroundTint="@color/textcolor"
+        android:textColor="@android:color/white" />
+
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:backgroundTint="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp" />
+</LinearLayout>
