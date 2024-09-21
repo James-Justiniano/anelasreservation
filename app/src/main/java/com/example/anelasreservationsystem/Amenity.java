@@ -3,16 +3,18 @@ package com.example.anelasreservationsystem;
 import java.io.Serializable;
 
 public class Amenity implements Serializable {
-    private String name; // Name of the amenity
-    private String price; // Price of the amenity
+    private String name;  // Name of the amenity
+    private int price;    // Price of the amenity (changed to int for numeric handling)
+    private int quantity; // Quantity of the amenity
 
     // Default constructor (required for Firebase)
     public Amenity() {}
 
     // Constructor with parameters
-    public Amenity(String name, String price) {
+    public Amenity(String name, int price, int quantity) {
         this.name = name;
         this.price = price;
+        this.quantity = quantity;
     }
 
     // Getters and Setters
@@ -24,11 +26,19 @@ public class Amenity implements Serializable {
         this.name = name;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 }

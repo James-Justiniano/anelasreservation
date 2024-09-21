@@ -1,6 +1,5 @@
-
-
 package com.example.anelasreservationsystem.RoomDetailFolder;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -15,10 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.anelasreservationsystem.R;
 import com.example.anelasreservationsystem.RoomFolder.Room;
+import com.example.anelasreservationsystem.Amenity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RoomDetailAdapter extends RecyclerView.Adapter<RoomDetailAdapter.RoomViewHolder> {
 
@@ -40,32 +42,45 @@ public class RoomDetailAdapter extends RecyclerView.Adapter<RoomDetailAdapter.Ro
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
         Room room = roomList.get(position);
+
+        // Set room details in the views
         holder.nameTextView.setText(room.getName());
         holder.priceTextView.setText(room.getPrice());
 
-        // Check if imageURLs list is not empty before loading the image
+        // Load the first image URL from the list using Glide
         if (room.getImageURLs() != null && !room.getImageURLs().isEmpty()) {
-            Glide.with(context).load(room.getImageURLs().get(0)).into(holder.imageView); // Show the first image
+            Glide.with(context).load(room.getImageURLs().get(0)).into(holder.imageView); // Load the first image
         } else {
-            // Optionally, set a placeholder image or handle the absence of an image
-            holder.imageView.setImageResource(R.drawable.placeholder_image); // Replace with your placeholder image resource
+            // Optionally, set a placeholder image if no image is available
+            holder.imageView.setImageResource(R.drawable.placeholder_image); // Set a placeholder image
         }
 
+        // Set click listener to open RoomDetailActivity
         holder.itemView.setOnClickListener(v -> {
-            // Start RoomDetailActivity
+            // Create intent to start RoomDetailActivity
             Intent intent = new Intent(context, RoomDetailActivity.class);
             intent.putExtra("roomId", room.getId());
             intent.putExtra("name", room.getName());
             intent.putExtra("description", room.getDescription());
             intent.putExtra("price", room.getPrice());
-            intent.putStringArrayListExtra("imageURLs", new ArrayList<>(room.getImageURLs())); // Pass image URLs
-            intent.putExtra("amenities", (Serializable) room.getAmenities());
 
-            // Start the activity
+            // Pass the image URLs as a list
+            intent.putStringArrayListExtra("imageURLs", new ArrayList<>(room.getImageURLs()));
+
+            // Pass the number of adults and children
+            intent.putExtra("adults", room.getAdults());
+            intent.putExtra("children", room.getChildren());
+
+            // Convert amenities to HashMap and pass it as Serializable
+            if (room.getAmenities() != null) {
+                intent.putExtra("amenities", (Serializable) convertAmenitiesToMap(room.getAmenities()));
+            }
+
+
+            // Start RoomDetailActivity
             context.startActivity(intent);
         });
     }
-
 
     @Override
     public int getItemCount() {
@@ -82,5 +97,15 @@ public class RoomDetailAdapter extends RecyclerView.Adapter<RoomDetailAdapter.Ro
             nameTextView = itemView.findViewById(R.id.textViewRoomName);
             priceTextView = itemView.findViewById(R.id.textViewRoomPrice);
         }
+    }
+
+    private Map<String, Integer> convertAmenitiesToMap(Map<String, Amenity> amenities) {
+        Map<String, Integer> amenitiesMap = new HashMap<>();
+        for (Map.Entry<String, Amenity> entry : amenities.entrySet()) {
+            String amenityName = entry.getValue().getName();
+            int amenityPrice = entry.getValue().getPrice();
+            amenitiesMap.put(amenityName, amenityPrice);
+        }
+        return amenitiesMap;
     }
 }

@@ -9,9 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
+import com.example.anelasreservationsystem.Amenity;
 import com.example.anelasreservationsystem.R;
 import com.example.anelasreservationsystem.RoomDetailFolder.RoomDetailActivity;
 
@@ -64,10 +67,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             intent.putExtra("description", room.getDescription());
             intent.putStringArrayListExtra("imageURLs", new ArrayList<>(room.getImageURLs())); // Pass image URLs
 
-            // Pass amenities and their prices
-            Map<String, Integer> amenities = room.getAmenities();
+            // Pass amenities as a list of Amenity objects
+            HashMap<String, Amenity> amenities = new HashMap<>(room.getAmenities());
             if (amenities != null) {
-                intent.putExtra("amenities", (HashMap<String, Integer>) amenities); // Cast to HashMap
+                ArrayList<Amenity> amenityList = new ArrayList<>(amenities.values());
+                intent.putExtra("amenitiesList", amenityList); // Pass as Serializable
             }
 
             // Pass the number of adults and children
@@ -96,4 +100,3 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         }
     }
 }
-

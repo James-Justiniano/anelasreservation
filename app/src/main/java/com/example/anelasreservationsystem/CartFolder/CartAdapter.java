@@ -96,8 +96,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
                 TextView amenityTextView = new TextView(holder.itemView.getContext());
 
                 // Display the amenity name along with its price
-                amenityTextView.setText(amenity.getName() + ": ₱" + amenity.getPrice());
-                amenityTextView.setTextSize(10);
+
                 amenityTextView.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));// Add some padding if needed

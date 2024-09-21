@@ -1,5 +1,4 @@
 
-
 package com.example.anelasreservationsystem.RoomDetailFolder;
 
 import android.annotation.SuppressLint;
@@ -25,7 +24,7 @@ import java.util.Map;
 public class RoomDetailActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
-    private TextView nameTextView, descriptionTextView, priceTextView, amenitiesTextView;
+    private TextView nameTextView, descriptionTextView, priceTextView, amenitiesTextView,adultsTextView, childrenTextView;
     private Button nextButton;
     private LinearLayout dotIndicator;
     private TextView[] dots;
@@ -45,6 +44,10 @@ public class RoomDetailActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.nextButton);
         amenitiesTextView = findViewById(R.id.amenitiesTextView);
 
+        // Initialize new TextViews
+        adultsTextView = findViewById(R.id.textViewAdults);
+        childrenTextView = findViewById(R.id.textViewChildren);
+
         // Get data from Intent
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
@@ -55,8 +58,11 @@ public class RoomDetailActivity extends AppCompatActivity {
         Map<String, Integer> amenities = (Map<String, Integer>) intent.getSerializableExtra("amenities");
 
         // Get number of adults and children
-        String numberOfAdults = intent.getStringExtra("numberOfAdults");
-        String numberOfChildren = intent.getStringExtra("numberOfChildren");
+        int numberOfAdults = intent.getIntExtra("adults", 0);
+        int numberOfChildren = intent.getIntExtra("children", 0);
+
+        adultsTextView.setText("Adults: " + numberOfAdults);
+        childrenTextView.setText("Children: " + numberOfChildren);
 
         // Log received data for debugging
         Log.d("RoomDetailActivity", "Name: " + name);
@@ -134,5 +140,3 @@ public class RoomDetailActivity extends AppCompatActivity {
         dots[position].setTextColor(getResources().getColor(R.color.textcolor, getApplicationContext().getTheme())); // Highlight the selected dot
     }
 }
-
-

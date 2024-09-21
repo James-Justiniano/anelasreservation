@@ -1,4 +1,3 @@
-
 package com.example.anelasreservationsystem.RoomFolder;
 
 import android.os.Bundle;
@@ -88,3 +87,4 @@ public class RoomsFragment extends Fragment {
     }
 
 }
+

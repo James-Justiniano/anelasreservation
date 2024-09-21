@@ -1,8 +1,10 @@
 package com.example.anelasreservationsystem;
 
+
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public class ReservationActivity extends AppCompatActivity {
@@ -131,7 +134,8 @@ public class ReservationActivity extends AppCompatActivity {
                 double roomTotalPrice = numberOfNights * Double.parseDouble(pricePerNight);
                 double amenitiesTotalPrice = 0;
                 for (Amenity amenity : selectedAmenities) {
-                    amenitiesTotalPrice += Double.parseDouble(amenity.getPrice());
+                    // Convert amenity price from int to double
+                    amenitiesTotalPrice += amenity.getPrice() * amenity.getQuantity();
                 }
 
                 double totalPrice = roomTotalPrice + amenitiesTotalPrice;
@@ -163,6 +167,7 @@ public class ReservationActivity extends AppCompatActivity {
         });
 
         cancelButton.setOnClickListener(v -> dialog.dismiss()); // Dismiss dialog on cancel
+
     }
 
 
@@ -225,27 +230,15 @@ public class ReservationActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String amenityName = snapshot.getKey();
+                    String amenityName = (String) snapshot.child("name").getValue();
+                    int amenityPrice = ((Long) snapshot.child("price").getValue()).intValue();
+                    int amenityQuantity = ((Long) snapshot.child("quantity").getValue()).intValue();
 
-                    // Check if the value is a Long or String and convert accordingly
-                    Object value = snapshot.getValue();
-                    String amenityPrice;
+                    // Debugging: Log the amenity quantity
+                    Log.d("Amenities", "Fetched amenity: " + amenityName + " with quantity: " + amenityQuantity);
 
-                    if (value instanceof Long) {
-                        amenityPrice = String.valueOf(value); // Convert Long to String
-                    } else if (value instanceof String) {
-                        amenityPrice = (String) value; // Use String directly
-                    } else {
-                        Log.e("ReservationActivity", "Unexpected type for amenity price: " + value.getClass());
-                        continue; // Skip this iteration if the type is unexpected
-                    }
-
-                    if (amenityName != null && amenityPrice != null) {
-                        Amenity amenity = new Amenity(amenityName, amenityPrice);
-                        addAmenityCheckbox(amenity); // Pass the amenity to your method to handle the display
-                    } else {
-                        Log.e("ReservationActivity", "Amenity conversion failed for key: " + snapshot.getKey());
-                    }
+                    Amenity amenity = new Amenity(amenityName, amenityPrice, amenityQuantity);
+                    addAmenityQuantityControl(amenity);
                 }
             }
 
@@ -256,24 +249,113 @@ public class ReservationActivity extends AppCompatActivity {
         });
     }
 
+    private void addAmenityQuantityControl(Amenity amenity) {
+        // Create a horizontal LinearLayout to hold the quantity controls
+        LinearLayout amenityLayout = new LinearLayout(this);
+        amenityLayout.setOrientation(LinearLayout.HORIZONTAL);
+        amenityLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
 
+        // Create a TextView for the amenity name and price
+        TextView amenityTextView = new TextView(this);
+        amenityTextView.setText(amenity.getName() + " (₱" + amenity.getPrice() + ")");
+        amenityTextView.setTextColor(getResources().getColor(R.color.black));
+        amenityTextView.setLayoutParams(new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1 // Weight to allow it to take up available space
+        ));
 
-    private void addAmenityCheckbox(Amenity amenity) {
-        CheckBox checkBox = new CheckBox(this);
-        checkBox.setText(amenity.getName() + " (₱" + amenity.getPrice() + ")");
+        // Create EditText for displaying quantity, starting at 0
+        EditText quantityEditText = new EditText(this);
+        quantityEditText.setLayoutParams(new LinearLayout.LayoutParams(
+                100, // Smaller width (adjust as needed)
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+        quantityEditText.setText("0"); // Start with 0 quantity
+        quantityEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        quantityEditText.setEnabled(false); // Disable editing
+        quantityEditText.setTextColor(getResources().getColor(R.color.textcolor));
 
-        checkBox.setTextColor(getResources().getColor(R.color.black));
+        // Create Buttons for increasing and decreasing quantity
+        Button increaseButton = new Button(this);
+        increaseButton.setText("+");
+        increaseButton.setLayoutParams(new LinearLayout.LayoutParams(
+                100, // Smaller width for the increase button
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
 
-        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                selectedAmenities.add(amenity);
+        Button decreaseButton = new Button(this);
+        decreaseButton.setText("-");
+        decreaseButton.setLayoutParams(new LinearLayout.LayoutParams(
+                100, // Smaller width for the decrease button
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        ));
+
+        // Set OnClickListener for increase button
+        increaseButton.setOnClickListener(v -> {
+            int currentQuantity = Integer.parseInt(quantityEditText.getText().toString());
+            int maxQuantity = amenity.getQuantity(); // Maximum allowed quantity
+
+            // Debugging: Log the current and maximum quantity
+            Log.d("Amenities", "Current quantity: " + currentQuantity + ", Max quantity: " + maxQuantity);
+
+            // Only increase if current quantity is less than max quantity
+            if (currentQuantity < maxQuantity) {
+                currentQuantity++;
+                quantityEditText.setText(String.valueOf(currentQuantity));
+                Log.d("Amenities", "Updated quantity: " + currentQuantity); // Log after update
+                updateSelectedAmenities(amenity, currentQuantity);
+                updateTotalPrice(); // Call updateTotalPrice to recalculate total
             } else {
-                selectedAmenities.remove(amenity);
+                Toast.makeText(this, "Cannot exceed maximum quantity of " + maxQuantity, Toast.LENGTH_SHORT).show();
             }
-            updateTotalPrice();
         });
 
-        amenitiesLayout.addView(checkBox);
+        // Set OnClickListener for decrease button
+        decreaseButton.setOnClickListener(v -> {
+            int currentQuantity = Integer.parseInt(quantityEditText.getText().toString());
+            if (currentQuantity > 0) {
+                currentQuantity--;
+                quantityEditText.setText(String.valueOf(currentQuantity));
+                Log.d("Amenities", "Decreased quantity: " + currentQuantity); // Log after decrease
+                updateSelectedAmenities(amenity, currentQuantity);
+                updateTotalPrice(); // Call updateTotalPrice to recalculate total
+            }
+        });
+
+        // Add views to the layout
+        amenityLayout.addView(amenityTextView);
+        amenityLayout.addView(decreaseButton);
+        amenityLayout.addView(quantityEditText);
+        amenityLayout.addView(increaseButton);
+
+        // Add the horizontal layout to the main layout
+        amenitiesLayout.addView(amenityLayout);
+    }
+
+
+    private void updateSelectedAmenities(Amenity amenity, int quantity) {
+        boolean exists = false;
+        for (Amenity selectedAmenity : selectedAmenities) {
+            if (selectedAmenity.getName().equals(amenity.getName())) {
+                selectedAmenity.setQuantity(quantity);
+                Log.d("Amenities", "Updated " + amenity.getName() + " to quantity: " + quantity);
+                exists = true;
+                break;
+            }
+        }
+
+        if (!exists && quantity > 0) {
+            Amenity newAmenity = new Amenity(amenity.getName(), amenity.getPrice(), quantity); // Pass quantity
+            selectedAmenities.add(newAmenity);
+            Log.d("Amenities", "Added " + newAmenity.getName() + " with quantity: " + quantity);
+        } else if (exists && quantity == 0) {
+            selectedAmenities.removeIf(selectedAmenity -> selectedAmenity.getName().equals(amenity.getName()));
+            Log.d("Amenities", "Removed " + amenity.getName() + " from selected amenities.");
+        }
     }
 
     private void fetchImageUrls() {
@@ -322,12 +404,13 @@ public class ReservationActivity extends AppCompatActivity {
         long numberOfNights = diffInMillis / (1000 * 60 * 60 * 24);
 
         if (numberOfNights > 0) {
+            // Calculate room total price
             double roomTotalPrice = numberOfNights * Double.parseDouble(pricePerNight);
 
             // Add the price of selected amenities
             double amenitiesTotalPrice = 0;
             for (Amenity amenity : selectedAmenities) {
-                amenitiesTotalPrice += Double.parseDouble(amenity.getPrice());
+                amenitiesTotalPrice += amenity.getPrice() * amenity.getQuantity(); // Calculate total based on quantity
             }
 
             double totalPrice = roomTotalPrice + amenitiesTotalPrice;
@@ -336,6 +419,7 @@ public class ReservationActivity extends AppCompatActivity {
             totalPriceTextView.setText("₱0.00");
         }
     }
+
 
 
     private void checkForPreviousCartDates() {
@@ -449,58 +533,65 @@ public class ReservationActivity extends AppCompatActivity {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String cartItemId = UUID.randomUUID().toString();
 
-        // Calculate the number of nights using the new check-in and check-out dates from the UI
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         try {
             Date checkInDate = sdf.parse(checkInEditText.getText().toString());
             Date checkOutDate = sdf.parse(checkOutEditText.getText().toString());
 
-            long diffInMillis = checkOutDate.getTime() - checkInDate.getTime();
-            long numberOfNights = diffInMillis / (1000 * 60 * 60 * 24);
+            if (checkInDate != null && checkOutDate != null) {
+                long diffInMillis = checkOutDate.getTime() - checkInDate.getTime();
+                long numberOfNights = diffInMillis / (1000 * 60 * 60 * 24);
 
-            // Calculate the total price
-            double roomTotalPrice = numberOfNights * Double.parseDouble(pricePerNight);
+                if (numberOfNights > 0) {
+                    double roomTotalPrice = numberOfNights * Double.parseDouble(pricePerNight);
 
-            // Add the price of selected amenities
-            double amenitiesTotalPrice = 0;
-            for (Amenity amenity : selectedAmenities) {
-                amenitiesTotalPrice += Double.parseDouble(amenity.getPrice());
-            }
+                    // Add the price of selected amenities
+                    double amenitiesTotalPrice = 0;
+                    for (Amenity amenity : selectedAmenities) {
+                        amenitiesTotalPrice += amenity.getPrice() * amenity.getQuantity(); // Multiply price by quantity
+                    }
 
-            double totalPrice = roomTotalPrice + amenitiesTotalPrice;
-            int quantity = 1; // Default quantity is 1, adjust if necessary
+                    double totalPrice = roomTotalPrice + amenitiesTotalPrice;
+                    int quantity = 1; // Default quantity is 1, adjust if necessary
 
-            // Create CartItem with all necessary details
-            CartItem cartItem = new CartItem(
-                    cartItemId,
-                    roomId,
-                    roomNameTextView.getText().toString(), // This is the roomType; change as needed
-                    checkInEditText.getText().toString(),
-                    checkOutEditText.getText().toString(),
-                    numberOfNights,
-                    pricePerNight,
-                    totalPrice,
-                    quantity,
-                    amenitiesTotalPrice,
-                    imageUrls,
-                    selectedAmenities
-            );
+                    // Create CartItem with all necessary details
+                    CartItem cartItem = new CartItem(
+                            cartItemId,
+                            roomId,
+                            roomNameTextView.getText().toString(), // This is the roomType; change as needed
+                            checkInEditText.getText().toString(),
+                            checkOutEditText.getText().toString(),
+                            numberOfNights,
+                            pricePerNight,
+                            totalPrice,
+                            quantity,
+                            amenitiesTotalPrice,
+                            imageUrls,
+                            selectedAmenities
+                    );
 
-            // Save to Firebase
-            DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("cart").child(userId).child(cartItemId);
-            cartRef.setValue(cartItem).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(ReservationActivity.this, "Room added to cart!", Toast.LENGTH_SHORT).show();
-                    updateCartItemCount();
+                    // Save to Firebase
+                    DatabaseReference cartRef = FirebaseDatabase.getInstance().getReference("cart").child(userId).child(cartItemId);
+                    cartRef.setValue(cartItem).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(ReservationActivity.this, "Room added to cart!", Toast.LENGTH_SHORT).show();
+                            updateCartItemCount();
+                        } else {
+                            Toast.makeText(ReservationActivity.this, "Failed to add room to cart.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 } else {
-                    Toast.makeText(ReservationActivity.this, "Failed to add room to cart.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Check-out date must be after check-in date.", Toast.LENGTH_SHORT).show();
                 }
-            });
+            } else {
+                Toast.makeText(this, "Error parsing check-in or check-out date", Toast.LENGTH_SHORT).show();
+            }
         } catch (ParseException e) {
             e.printStackTrace();
             Toast.makeText(this, "Error parsing check-in or check-out date", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     private void updateCartItemCount() {
