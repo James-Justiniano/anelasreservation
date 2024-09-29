@@ -1,4 +1,4 @@
-package com.example.anelasreservationsystem;
+package com.example.anelasreservationsystem.imageslideradapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.anelasreservationsystem.R;
 
 import java.util.List;
 

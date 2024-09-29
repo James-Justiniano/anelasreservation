@@ -54,6 +54,39 @@
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false" />
 
+
+            <!-- New Section: Proof of Payment -->
+            <TextView
+                android:id="@+id/proofOfPaymentLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Upload Proof of Payment"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <!-- Button to Select Image -->
+            <Button
+                android:id="@+id/uploadProofOfPaymentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select Image"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/textcolor"
+                android:textColor="@color/white"/>
+
+            <!-- ImageView to Display Selected Image -->
+            <ImageView
+                android:id="@+id/proofOfPaymentImageView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:contentDescription="Proof of Payment Preview"
+                android:background="@color/grey" />
+
             <!-- Payment Details Section -->
             <TextView
                 android:id="@+id/textView8"

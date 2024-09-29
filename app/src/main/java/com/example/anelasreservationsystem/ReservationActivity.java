@@ -54,8 +54,8 @@ public class ReservationActivity extends AppCompatActivity {
     private List<Amenity> selectedAmenities = new ArrayList<>();
     private NumberPicker adultNumberPicker;
     private NumberPicker childNumberPicker;
-    private int numberOfAdults;  // Maximum adults from room structure
-    private int numberOfChildren; // Maximum children from room structure
+    private int selectedAdults = 1; // Default value (e.g., 1 adult)
+    private int selectedChildren = 0; // Default value (e.g., 0 children)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +133,7 @@ public class ReservationActivity extends AppCompatActivity {
 
                 double roomTotalPrice = numberOfNights * Double.parseDouble(pricePerNight);
                 double amenitiesTotalPrice = 0;
+
                 for (Amenity amenity : selectedAmenities) {
                     // Convert amenity price from int to double
                     amenitiesTotalPrice += amenity.getPrice() * amenity.getQuantity();
@@ -140,7 +141,11 @@ public class ReservationActivity extends AppCompatActivity {
 
                 double totalPrice = roomTotalPrice + amenitiesTotalPrice;
 
-                // Create CartItem object to pass to checkout
+                // Use the selected number of adults and children
+                int selectedAdults = adultNumberPicker.getValue(); // Get selected value from NumberPicker
+                int selectedChildren = childNumberPicker.getValue(); // Get selected value from NumberPicker
+
+                // Create CartItem object to pass to checkout, including adults and children
                 CartItem cartItem = new CartItem(
                         cartItemId,
                         roomId,
@@ -153,7 +158,9 @@ public class ReservationActivity extends AppCompatActivity {
                         1,  // Default quantity is 1
                         amenitiesTotalPrice,
                         imageUrls,
-                        selectedAmenities
+                        selectedAmenities,
+                        selectedAdults,   // Pass selected adults
+                        selectedChildren  // Pass selected children
                 );
 
                 // Pass the cartItem object to CheckoutActivity
@@ -167,6 +174,7 @@ public class ReservationActivity extends AppCompatActivity {
         });
 
         cancelButton.setOnClickListener(v -> dialog.dismiss()); // Dismiss dialog on cancel
+
 
     }
 
@@ -190,7 +198,6 @@ public class ReservationActivity extends AppCompatActivity {
         }
     }
 
-    // Fetch room details including maxAdults and maxChildren
     private void fetchRoomDetails() {
         DatabaseReference roomRef = FirebaseDatabase.getInstance()
                 .getReference("rooms").child(roomId);
@@ -200,16 +207,39 @@ public class ReservationActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // Fetch the max adults and children from the room structure
-                    numberOfAdults = dataSnapshot.child("adults").getValue(Integer.class);
-                    numberOfChildren = dataSnapshot.child("children").getValue(Integer.class);
+                    Integer numberOfAdults = dataSnapshot.child("adults").getValue(Integer.class);
+                    Integer numberOfChildren = dataSnapshot.child("children").getValue(Integer.class);
 
-                    // Set max values for NumberPicker
-                    adultNumberPicker.setMaxValue(numberOfAdults);
+                    // Handle null values and set max for NumberPicker
+                    adultNumberPicker.setMaxValue(numberOfAdults != null ? numberOfAdults : 1);
                     adultNumberPicker.setMinValue(1); // Assuming at least one adult
-                    childNumberPicker.setMaxValue(numberOfChildren);
+
+                    childNumberPicker.setMaxValue(numberOfChildren != null ? numberOfChildren : 0);
                     childNumberPicker.setMinValue(0); // Assuming zero is allowed for children
 
-                    // Update other UI elements as needed
+                    // Add listeners to capture selected values
+                    adultNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                        @Override
+                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                            // Update selected adults value
+                            selectedAdults = newVal;
+                            Log.d("ReservationActivity", "Selected Adults: " + selectedAdults);
+                        }
+                    });
+
+                    childNumberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                        @Override
+                        public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                            // Update selected children value
+                            selectedChildren = newVal;
+                            Log.d("ReservationActivity", "Selected Children: " + selectedChildren);
+                        }
+                    });
+
+                    // Optionally, set default values
+                    adultNumberPicker.setValue(1);  // Default selection for adults
+                    childNumberPicker.setValue(0);  // Default selection for children
+
                 } else {
                     Log.e("ReservationActivity", "Room data not found");
                 }
@@ -545,14 +575,17 @@ public class ReservationActivity extends AppCompatActivity {
                 if (numberOfNights > 0) {
                     double roomTotalPrice = numberOfNights * Double.parseDouble(pricePerNight);
 
-                    // Add the price of selected amenities
+                    // Calculate the total price of selected amenities
                     double amenitiesTotalPrice = 0;
                     for (Amenity amenity : selectedAmenities) {
                         amenitiesTotalPrice += amenity.getPrice() * amenity.getQuantity(); // Multiply price by quantity
                     }
 
                     double totalPrice = roomTotalPrice + amenitiesTotalPrice;
-                    int quantity = 1; // Default quantity is 1, adjust if necessary
+
+                    // Get selected adults and children from NumberPicker
+                    int selectedAdults = adultNumberPicker.getValue();
+                    int selectedChildren = childNumberPicker.getValue();
 
                     // Create CartItem with all necessary details
                     CartItem cartItem = new CartItem(
@@ -564,10 +597,12 @@ public class ReservationActivity extends AppCompatActivity {
                             numberOfNights,
                             pricePerNight,
                             totalPrice,
-                            quantity,
+                            1, // Quantity default is 1
                             amenitiesTotalPrice,
                             imageUrls,
-                            selectedAmenities
+                            selectedAmenities,
+                            selectedAdults,
+                            selectedChildren
                     );
 
                     // Save to Firebase
@@ -584,14 +619,13 @@ public class ReservationActivity extends AppCompatActivity {
                     Toast.makeText(this, "Check-out date must be after check-in date.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(this, "Error parsing check-in or check-out date", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error parsing check-in or check-out date.", Toast.LENGTH_SHORT).show();
             }
         } catch (ParseException e) {
             e.printStackTrace();
             Toast.makeText(this, "Error parsing check-in or check-out date", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     private void updateCartItemCount() {

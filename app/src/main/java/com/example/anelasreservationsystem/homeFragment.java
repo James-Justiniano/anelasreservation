@@ -2,23 +2,33 @@ package com.example.anelasreservationsystem;
 
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
+import com.bumptech.glide.Glide;
 import com.example.anelasreservationsystem.CategoryFolder.Category;
 import com.example.anelasreservationsystem.CategoryFolder.CategoryAdapter;
+import com.example.anelasreservationsystem.CottageFolder.CottageFragment;
 import com.example.anelasreservationsystem.RoomFolder.Room;
 import com.example.anelasreservationsystem.RoomFolder.RoomAdapter;
 import com.example.anelasreservationsystem.RoomFolder.RoomsFragment;
+import com.example.anelasreservationsystem.imageslideradapter.DrawableImageSliderAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +62,15 @@ public class homeFragment extends Fragment implements CategoryAdapter.OnCategory
         }
     };
 
+    // Views for user profile
+    private TextView fullNameTextView;
+    private ImageView profileImageView;
+
+    // Firebase references
+    private DatabaseReference userRef;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+
     public homeFragment() {
         // Required empty public constructor
     }
@@ -59,8 +78,6 @@ public class homeFragment extends Fragment implements CategoryAdapter.OnCategory
     public static homeFragment newInstance(String param1, String param2) {
         homeFragment fragment = new homeFragment();
         Bundle args = new Bundle();
-        args.putString("param1", param1);
-        args.putString("param2", param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -88,6 +105,9 @@ public class homeFragment extends Fragment implements CategoryAdapter.OnCategory
 
         // Fetch popular rooms from Firebase
         fetchPopularRooms();
+
+        // Fetch user profile data from Firebase
+        fetchUserProfileData(view);
 
         return view;
     }
@@ -158,6 +178,49 @@ public class homeFragment extends Fragment implements CategoryAdapter.OnCategory
                 // Handle error here
             }
         });
+    }
+
+    private void fetchUserProfileData(View view) {
+        // Initialize views for full name and profile image
+        fullNameTextView = view.findViewById(R.id.textView2);
+        profileImageView = view.findViewById(R.id.imageView3);
+
+        // Get the current user
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        // Ensure the user is signed in
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+
+            // Reference to the Users node in the database
+            userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+
+            // Retrieve user data
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Retrieve the fullName and profileImageUrl
+                        String fullName = dataSnapshot.child("fullName").getValue(String.class);
+                        String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue(String.class);
+
+                        // Set the fullName to the TextView
+                        fullNameTextView.setText("Hi " + fullName);
+
+                        // Load the profile image using Glide
+                        if (profileImageUrl != null) {
+                            Glide.with(getContext()).load(profileImageUrl).circleCrop().into(profileImageView);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle database error
+                }
+            });
+        }
     }
 
     @Override

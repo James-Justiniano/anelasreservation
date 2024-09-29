@@ -17,6 +17,15 @@
         android:theme="@style/Theme.AnelasReservationSystem"
         tools:targetApi="31">
         <activity
+            android:name=".CottageReservation"
+            android:exported="false" />
+        <activity
+            android:name=".PendingFragment"
+            android:exported="false" />
+        <activity
+            android:name=".CottageDetailFolder.CottageDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".CheckoutActivity"
             android:exported="false" />
         <activity

@@ -1,4 +1,4 @@
-package com.example.anelasreservationsystem.RoomFolder;
+package com.example.anelasreservationsystem.CottageFolder;
 
 import com.example.anelasreservationsystem.Amenity;
 
@@ -7,40 +7,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Room {
+public class Cottage {
     private String id;
     private String name;
     private List<String> imageURLs; // List of image URLs
-    private String price; // Keep this as String
+    private String price;
     private String description;
-    private Map<String, Amenity> amenities; // Map of Amenity objects
+    private Map<String, Amenity> amenities;
     private int adults;   // Number of adults as int
     private int children; // Number of children as int
-    private int quantity; // New field for quantity
 
-    // Default constructor required for calls to DataSnapshot.getValue(Room.class)
-    public Room() {
-        this.imageURLs = new ArrayList<>(); // Initialize to avoid NullPointerException
-        this.amenities = new HashMap<>();   // Initialize amenities map
+    public Cottage() {
+        // Default constructor required for calls to DataSnapshot.getValue(Cottage.class)
+        this.imageURLs = new ArrayList<>();
+        this.amenities = new HashMap<>();
         this.adults = 0;                    // Default value for adults
-        this.children = 0;                  // Default value for children
-        this.quantity = 0;                  // Default value for quantity (e.g., 1 room)
+        this.children = 0; // Initialize to avoid NullPointerException
     }
 
-    public Room(String id, String name, List<String> imageURLs, String price, String description,
-                Map<String, Amenity> amenities, int adults, int children, int quantity) {
+    public Cottage(String id, String name, List<String> imageURLs, String price, String description, int adults, int children) {
         this.id = id;
         this.name = name;
         this.imageURLs = imageURLs;
-        this.price = price;               // Set as String
+        this.price = price;
         this.description = description;
         this.amenities = amenities;       // Initialize amenities map
         this.adults = adults;             // Set number of adults as int
-        this.children = children;         // Set number of children as int
-        this.quantity = quantity;         // Set quantity as int
+        this.children = children;
     }
-
-    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -53,10 +47,6 @@ public class Room {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public List<String> getImageURLs() {
         return imageURLs; // Return the list of image URLs
     }
@@ -66,11 +56,7 @@ public class Room {
     }
 
     public String getPrice() {
-        return price; // Return the price as a String
-    }
-
-    public void setPrice(String price) {
-        this.price = price; // Setter for price
+        return price;
     }
 
     public String getDescription() {
@@ -80,7 +66,6 @@ public class Room {
     public void setDescription(String description) {
         this.description = description;
     }
-
     public Map<String, Amenity> getAmenities() {
         return amenities; // Getter for amenities map
     }
@@ -102,14 +87,6 @@ public class Room {
     }
 
     public void setChildren(int children) {
-        this.children = children; // Setter for number of children
-    }
-
-    public int getQuantity() {
-        return quantity; // Getter for quantity
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity; // Setter for quantity
-    }
+        this.children = children;
+    } // Setter for number of children
 }

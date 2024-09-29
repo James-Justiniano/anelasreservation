@@ -1,6 +1,3 @@
-
-
-
 package com.example.anelasreservationsystem.CartFolder;
 
 import com.example.anelasreservationsystem.Amenity;
@@ -19,23 +16,28 @@ public class CartItem implements Serializable {
     private String pricePerNight;   // Price per night
     private double totalPrice;      // Total price for the reservation
     private int quantity;           // Quantity of rooms (or items)
-    private double amenitiesPrice;   // Total price of the amenities
+    private double amenitiesPrice;  // Total price of the amenities
     private List<String> imageUrls; // List of URLs for room images
     private List<Amenity> amenities; // List of amenities for the room
-    private boolean isSelected;      // New field for selection
+    private boolean isSelected;     // New field for selection
+    private int selectedAdults;     // Number of adults
+    private int selectedChildren;   // Number of children
 
     // Default constructor (required for Firebase)
     public CartItem() {
         this.amenities = new ArrayList<>(); // Initialize with an empty list
         this.imageUrls = new ArrayList<>(); // Initialize with an empty list
-        this.isSelected = false;             // Initialize selection state
+        this.isSelected = false;            // Initialize selection state
+        this.selectedAdults = 1;            // Default value of 1 adult
+        this.selectedChildren = 0;          // Default value of 0 children
     }
 
     // Constructor with all fields
     public CartItem(String cartItemId, String roomId, String roomType, String checkInDate,
                     String checkOutDate, long numberOfNights, String pricePerNight,
                     double totalPrice, int quantity, double amenitiesPrice,
-                    List<String> imageUrls, List<Amenity> amenities) {
+                    List<String> imageUrls, List<Amenity> amenities,
+                    int selectedAdults, int selectedChildren) {
         this.cartItemId = cartItemId;
         this.roomId = roomId;
         this.roomType = roomType;
@@ -48,7 +50,9 @@ public class CartItem implements Serializable {
         this.amenitiesPrice = amenitiesPrice;
         this.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
         this.amenities = amenities != null ? new ArrayList<>(amenities) : new ArrayList<>();
-        this.isSelected = false; // Initialize selection state
+        this.isSelected = false;  // Initialize selection state
+        this.selectedAdults = selectedAdults;   // Set the number of adults
+        this.selectedChildren = selectedChildren; // Set the number of children
     }
 
     // Getters and setters
@@ -155,5 +159,23 @@ public class CartItem implements Serializable {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    // Getter and setter for selectedAdults
+    public int getSelectedAdults() {
+        return selectedAdults;
+    }
+
+    public void setSelectedAdults(int selectedAdults) {
+        this.selectedAdults = selectedAdults;
+    }
+
+    // Getter and setter for selectedChildren
+    public int getSelectedChildren() {
+        return selectedChildren;
+    }
+
+    public void setSelectedChildren(int selectedChildren) {
+        this.selectedChildren = selectedChildren;
     }
 }

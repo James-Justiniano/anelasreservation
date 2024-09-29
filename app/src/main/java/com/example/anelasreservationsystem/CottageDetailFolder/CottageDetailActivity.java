@@ -1,5 +1,4 @@
-
-package com.example.anelasreservationsystem.RoomDetailFolder;
+package com.example.anelasreservationsystem.CottageDetailFolder;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -10,20 +9,21 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.example.anelasreservationsystem.ReservationActivity;
 import com.example.anelasreservationsystem.imageslideradapter.ImageSliderAdapter;
 import com.example.anelasreservationsystem.R;
-import com.example.anelasreservationsystem.ReservationActivity;
 
 import java.util.List;
 import java.util.Map;
 
-public class RoomDetailActivity extends AppCompatActivity {
+public class CottageDetailActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
-    private TextView nameTextView, descriptionTextView, priceTextView, amenitiesTextView,adultsTextView, childrenTextView;
+    private TextView nameTextView, descriptionTextView, priceTextView, amenitiesTextView, adultsTextView, childrenTextView;
     private Button nextButton;
     private LinearLayout dotIndicator;
     private TextView[] dots;
@@ -32,7 +32,8 @@ public class RoomDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_room_detail);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_cottage_detail);
 
         // Initialize UI elements
         viewPager = findViewById(R.id.viewPagerRoomImages);
@@ -43,7 +44,6 @@ public class RoomDetailActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.nextButton);
         amenitiesTextView = findViewById(R.id.amenitiesTextView);
 
-        // Initialize new TextViews
         adultsTextView = findViewById(R.id.textViewAdults);
         childrenTextView = findViewById(R.id.textViewChildren);
 
@@ -52,7 +52,7 @@ public class RoomDetailActivity extends AppCompatActivity {
         String name = intent.getStringExtra("name");
         String description = intent.getStringExtra("description");
         String price = intent.getStringExtra("price");
-        String roomId = intent.getStringExtra("roomId");
+        String cottageId = intent.getStringExtra("cottageId");
         List<String> imageURLs = intent.getStringArrayListExtra("imageURLs");
         Map<String, Integer> amenities = (Map<String, Integer>) intent.getSerializableExtra("amenities");
 
@@ -64,12 +64,12 @@ public class RoomDetailActivity extends AppCompatActivity {
         childrenTextView.setText("Children: " + numberOfChildren);
 
         // Log received data for debugging
-        Log.d("RoomDetailActivity", "Name: " + name);
-        Log.d("RoomDetailActivity", "Description: " + description);
-        Log.d("RoomDetailActivity", "Price: " + price);
-        Log.d("RoomDetailActivity", "RoomId: " + roomId);
-        Log.d("RoomDetailActivity", "Number of Adults: " + numberOfAdults);
-        Log.d("RoomDetailActivity", "Number of Children: " + numberOfChildren);
+        Log.d("CottageDetailActivity", "Name: " + name);
+        Log.d("CottageDetailActivity", "Description: " + description);
+        Log.d("CottageDetailActivity", "Price: " + price);
+        Log.d("CottageDetailActivity", "CottageId: " + cottageId);
+        Log.d("CottageDetailActivity", "Number of Adults: " + numberOfAdults);
+        Log.d("CottageDetailActivity", "Number of Children: " + numberOfChildren);
 
         // Set data to views with fallback text
         nameTextView.setText(name != null && !name.isEmpty() ? name : "No Name Provided");
@@ -109,13 +109,13 @@ public class RoomDetailActivity extends AppCompatActivity {
 
         // Handle Next button click to proceed to reservation
         nextButton.setOnClickListener(v -> {
-            Intent reservationIntent = new Intent(RoomDetailActivity.this, ReservationActivity.class);
+            Intent reservationIntent = new Intent(CottageDetailActivity.this, ReservationActivity.class);
             reservationIntent.putExtra("name", name);
             reservationIntent.putExtra("description", description);
             reservationIntent.putExtra("pricePerNight", price);
-            reservationIntent.putExtra("roomId", roomId);
-            reservationIntent.putExtra("numberOfAdults", numberOfAdults);  // Pass number of adults
-            reservationIntent.putExtra("numberOfChildren", numberOfChildren); // Pass number of children
+            reservationIntent.putExtra("cottageId", cottageId);
+            reservationIntent.putExtra("numberOfAdults", numberOfAdults);
+            reservationIntent.putExtra("numberOfChildren", numberOfChildren);
             startActivity(reservationIntent);
         });
     }

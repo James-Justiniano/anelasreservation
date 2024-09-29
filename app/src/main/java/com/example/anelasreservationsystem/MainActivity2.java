@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.anelasreservationsystem.Fragment.CartFragment;
+import com.example.anelasreservationsystem.Fragment.ReservationFragment;
 import com.example.anelasreservationsystem.Fragment.aboutFragment;
 import com.example.anelasreservationsystem.Profile.ProfileFragment;
 import com.google.android.material.navigation.NavigationView;
@@ -53,7 +53,7 @@ public class MainActivity2 extends AppCompatActivity implements NavigationView.O
         } else if (id == R.id.nav_settings) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
         } else if (id == R.id.nav_share) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CartFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ReservationFragment()).commit();
         } else if (id == R.id.nav_about) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new aboutFragment()).commit();
         } else if (id == R.id.nav_logout) {

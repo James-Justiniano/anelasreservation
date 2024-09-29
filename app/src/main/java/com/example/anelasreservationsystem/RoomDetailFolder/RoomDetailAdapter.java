@@ -2,6 +2,7 @@ package com.example.anelasreservationsystem.RoomDetailFolder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,34 +52,43 @@ public class RoomDetailAdapter extends RecyclerView.Adapter<RoomDetailAdapter.Ro
         if (room.getImageURLs() != null && !room.getImageURLs().isEmpty()) {
             Glide.with(context).load(room.getImageURLs().get(0)).into(holder.imageView); // Load the first image
         } else {
-            // Optionally, set a placeholder image if no image is available
             holder.imageView.setImageResource(R.drawable.placeholder_image); // Set a placeholder image
         }
 
-        // Set click listener to open RoomDetailActivity
+        // Check room availability
+        if (room.getQuantity() == 0) {  // Assuming quantity 0 means not available
+            holder.overlayView.setVisibility(View.VISIBLE); // Show overlay
+            holder.notAvailableTextView.setVisibility(View.VISIBLE); // Show "Not Available" text
+        } else {
+            holder.overlayView.setVisibility(View.GONE); // Hide overlay
+            holder.notAvailableTextView.setVisibility(View.GONE); // Hide "Not Available" text
+        }
+
+        // Set click listener to open RoomDetailActivity only if enabled
         holder.itemView.setOnClickListener(v -> {
-            // Create intent to start RoomDetailActivity
-            Intent intent = new Intent(context, RoomDetailActivity.class);
-            intent.putExtra("roomId", room.getId());
-            intent.putExtra("name", room.getName());
-            intent.putExtra("description", room.getDescription());
-            intent.putExtra("price", room.getPrice());
+            if (room.getQuantity() > 0) {
+                // Create intent to start RoomDetailActivity
+                Intent intent = new Intent(context, RoomDetailActivity.class);
+                intent.putExtra("roomId", room.getId());
+                intent.putExtra("name", room.getName());
+                intent.putExtra("description", room.getDescription());
+                intent.putExtra("price", room.getPrice());
 
-            // Pass the image URLs as a list
-            intent.putStringArrayListExtra("imageURLs", new ArrayList<>(room.getImageURLs()));
+                // Pass the image URLs as a list
+                intent.putStringArrayListExtra("imageURLs", new ArrayList<>(room.getImageURLs()));
 
-            // Pass the number of adults and children
-            intent.putExtra("adults", room.getAdults());
-            intent.putExtra("children", room.getChildren());
+                // Pass the number of adults and children
+                intent.putExtra("adults", room.getAdults());
+                intent.putExtra("children", room.getChildren());
 
-            // Convert amenities to HashMap and pass it as Serializable
-            if (room.getAmenities() != null) {
-                intent.putExtra("amenities", (Serializable) convertAmenitiesToMap(room.getAmenities()));
+                // Convert amenities to HashMap and pass it as Serializable
+                if (room.getAmenities() != null) {
+                    intent.putExtra("amenities", (Serializable) convertAmenitiesToMap(room.getAmenities()));
+                }
+
+                // Start RoomDetailActivity
+                context.startActivity(intent);
             }
-
-
-            // Start RoomDetailActivity
-            context.startActivity(intent);
         });
     }
 
@@ -89,13 +99,16 @@ public class RoomDetailAdapter extends RecyclerView.Adapter<RoomDetailAdapter.Ro
 
     public static class RoomViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
-        TextView nameTextView, priceTextView;
+        TextView nameTextView, priceTextView, notAvailableTextView;
+        View overlayView; // Declare the overlay view
 
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageViewRoom);
             nameTextView = itemView.findViewById(R.id.textViewRoomName);
+            overlayView = itemView.findViewById(R.id.overlayView); // Initialize the overlay view
             priceTextView = itemView.findViewById(R.id.textViewRoomPrice);
+            notAvailableTextView = itemView.findViewById(R.id.textViewNotAvailable);
         }
     }
 

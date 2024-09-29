@@ -225,13 +225,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         DatabaseReference roomRef = FirebaseDatabase.getInstance().getReference("rooms").child(roomId);
         roomRef.child("quantity").get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
-                String availableQuantityStr = task.getResult().getValue(String.class);
-                try {
-                    int availableQuantity = Integer.parseInt(availableQuantityStr); // Convert string to int
+                // Directly get the Long value from Firebase
+                Long availableQuantityLong = task.getResult().getValue(Long.class);
+                if (availableQuantityLong != null) {
+                    int availableQuantity = availableQuantityLong.intValue(); // Convert Long to int
                     callback.onRoomQuantityFetched(availableQuantity);
-                } catch (NumberFormatException e) {
-                    Log.e("CartAdapter", "Failed to convert available quantity to int: " + e.getMessage());
-                    callback.onRoomQuantityFetched(0); // Default to 0 if conversion fails
+                } else {
+                    Log.e("CartAdapter", "Available quantity is null.");
+                    callback.onRoomQuantityFetched(0); // Default to 0 if quantity is null
                 }
             } else {
                 Log.e("CartAdapter", "Failed to fetch room data: " + task.getException().getMessage());
@@ -239,6 +240,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             }
         });
     }
+
 
     // Callback interface to handle the fetched room quantity
     public interface RoomQuantityCallback {

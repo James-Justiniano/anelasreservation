@@ -1,10 +1,9 @@
-package com.example.anelasreservationsystem;
+package com.example.anelasreservationsystem.CottageFolder;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +11,21 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.anelasreservationsystem.CottageDetailFolder.CottageDetailAdapter;
+import com.example.anelasreservationsystem.R;
+import com.example.anelasreservationsystem.RoomDetailFolder.RoomDetailAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class CottageFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private CottageAdapter cottageAdapter;
+    private CottageDetailAdapter cottageAdapter;
     private List<Cottage> cottageList;
     private DatabaseReference databaseReference;
 
@@ -41,16 +42,16 @@ public class CottageFragment extends Fragment {
         // Initialize RecyclerView
         recyclerView = view.findViewById(R.id.recyclerViewCottages);
 
-        // Set up a GridLayoutManager with 2 columns (you can adjust the number of columns as needed)
-        int numberOfColumns = 2; // Adjust this value to control how many items are in a row
+        // Set up a GridLayoutManager with 2 columns
+        int numberOfColumns = 2;
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), numberOfColumns));
         recyclerView.setHasFixedSize(true);
 
         // Initialize the cottage list
         cottageList = new ArrayList<>();
 
-        // Initialize the adapter and set it to the RecyclerView
-        cottageAdapter = new CottageAdapter(cottageList);
+        // Pass the context to the adapter
+        cottageAdapter = new CottageDetailAdapter(getContext(), cottageList);
         recyclerView.setAdapter(cottageAdapter);
 
         // Initialize Firebase reference
@@ -68,18 +69,20 @@ public class CottageFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 cottageList.clear(); // Clear the list before adding new data
                 for (DataSnapshot cottageSnapshot : dataSnapshot.getChildren()) {
+                    String cottageId = cottageSnapshot.getKey();
                     Cottage cottage = cottageSnapshot.getValue(Cottage.class);
                     if (cottage != null) {
                         // Log the data being fetched
                         Log.d("CottageFragment", "Cottage Name: " + cottage.getName());
-                        Log.d("CottageFragment", "Image URL: " + cottage.getImageURL()); // Use imageURL here
+                        Log.d("CottageFragment", "Image URL: " + cottage.getImageURLs());
                         Log.d("CottageFragment", "Price: " + cottage.getPrice());
-
+                        cottage.setId(cottageId);
                         cottageList.add(cottage);
                     } else {
                         Log.d("CottageFragment", "Cottage data is null for: " + cottageSnapshot.getKey());
                     }
                 }
+                Log.d("CottageFragment", "Total Cottages Fetched: " + cottageList.size()); // Log total cottages fetched
                 cottageAdapter.notifyDataSetChanged(); // Notify adapter of data changes
             }
 
